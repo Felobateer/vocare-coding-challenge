@@ -2,13 +2,19 @@ import { supabase } from "./db_handler";
 import { AppointmentRequest, AppointmentResponse } from "./interface";
 
 const getAppointments = async () => {
+  await supabase.auth.signInWithPassword({
+    email: "your@email.com",
+    password: "yourPassword",
+  });
+
   const { data, error } = await supabase
     .from("appointments")
-    .select("*")
-    .order("date", { ascending: false });
+    .select("id, start, end, location, title, notes")
+    .order("start", { ascending: true });
 
   if (error) {
     console.error("Error fetching appointments:", error);
+    console.log("API key: ", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     throw new Error(`Error fetching appointments: ${error.message}`);
   }
 
