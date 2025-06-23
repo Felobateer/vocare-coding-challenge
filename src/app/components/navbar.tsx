@@ -8,6 +8,18 @@ interface NavbarProps {
 }
 
 export default function Navbar({ tab, setTab }: NavbarProps) {
+  const requestAppointments = async () => {
+    const res = await fetch("api/appointments", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await res.json();
+    console.log(data);
+  };
+
   return (
     <nav className="flex flex-row mx-6 h-16 items-center justify-between">
       <DatePicker />
@@ -25,7 +37,7 @@ export default function Navbar({ tab, setTab }: NavbarProps) {
         </TabsList>
       </Tabs>
       <Button variant="outline">Termine filtern</Button>
-      <Button>Neuer Termin</Button>
+      <Button onClick={requestAppointments}>Neuer Termin</Button>
     </nav>
   );
 }

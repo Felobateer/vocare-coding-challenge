@@ -9,7 +9,7 @@ const getAppointments = async () => {
 
   if (error) {
     console.error("Error fetching appointments:", error);
-    throw new Error("Failed to fetch appointments");
+    throw new Error(`Error fetching appointments: ${error.message}`);
   }
 
   return data;
