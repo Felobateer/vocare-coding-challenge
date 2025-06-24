@@ -1,86 +1,76 @@
-import { supabase } from "./db_handler";
+import { db } from "./db_config";
+import { appointments } from "./db_handler";
+import { eq } from "drizzle-orm";
 import { AppointmentRequest, AppointmentResponse } from "./interface";
+import { randomUUID } from "crypto";
 
+const normalizeAppointment = (a: AppointmentRequest) => ({
+  ...a,
+  id: randomUUID(),
+  created_at: new Date(),
+  updated_at: new Date(),
+  start: new Date(a.start),
+  end: new Date(a.end),
+});
+
+// Get all appointments
 const getAppointments = async () => {
-  await supabase.auth.signInWithPassword({
-    email: "your@email.com",
-    password: "yourPassword",
-  });
-
-  const { data, error } = await supabase
-    .from("appointments")
-    .select("id, start, end, location, title, notes")
-    .order("start", { ascending: true });
-
-  if (error) {
-    console.error("Error fetching appointments:", error);
-    console.log("API key: ", process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    throw new Error(`Error fetching appointments: ${error.message}`);
-  }
+  const data = await db
+    .select({
+      id: appointments.id,
+      start: appointments.start,
+      end: appointments.end,
+      location: appointments.location,
+      title: appointments.title,
+      notes: appointments.notes,
+    })
+    .from(appointments)
+    .orderBy(appointments.start);
 
   return data;
 };
 
+// Get appointment by ID
 const getAppointmentById = async (id: string) => {
-  const { data, error } = await supabase
-    .from("appointments")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const [appointment] = await db
+    .select()
+    .from(appointments)
+    .where(eq(appointments.id, id));
 
-  if (error) {
-    console.error("Error fetching appointment:", error);
-    throw new Error("Failed to fetch appointment");
-  }
+  if (!appointment) throw new Error("Appointment not found");
 
-  return data;
+  return appointment;
 };
 
+// Create new appointment
 const createAppointment = async (appointment: AppointmentRequest) => {
-  const { data, error } = await supabase
-    .from("appointments")
-    .insert([appointment])
-    .select("*")
-    .single();
+  const [created] = await db
+    .insert(appointments)
+    .values(normalizeAppointment(appointment))
+    .returning();
 
-  if (error) {
-    console.error("Error creating appointment:", error);
-    throw new Error("Failed to create appointment");
-  }
-
-  return data;
+  return created;
 };
 
+// Update appointment
 const updateAppointment = async (appointment: AppointmentResponse) => {
-  const { data, error } = await supabase
-    .from("appointments")
-    .update(appointment)
-    .eq("id", appointment.id)
-    .select("*")
-    .single();
+  const [updated] = await db
+    .update(appointments)
+    .set(normalizeAppointment(appointment))
+    .where(eq(appointments.id, appointment.id))
+    .returning();
 
-  if (error) {
-    console.error("Error updating appointment:", error);
-    throw new Error("Failed to update appointment");
-  }
-
-  return data;
+  return updated;
 };
 
+// Delete appointment
 const deleteAppointment = async (id: string) => {
-  const { data, error } = await supabase
-    .from("appointments")
-    .delete()
-    .eq("id", id)
-    .select("*")
-    .single();
+  const [deleted] = await db
+    .delete(appointments)
+    .where(eq(appointments.id, id))
+    .returning();
 
-  if (error) {
-    console.error("Error deleting appointment:", error);
-    throw new Error("Failed to delete appointment");
-  }
-
-  return data;
+  return deleted;
 };
 
 export {
