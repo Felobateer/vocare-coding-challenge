@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import clsx from "clsx";
+import WeekhourPointer from "./weekhourPointer";
 
 export default function WeekTab() {
   const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
@@ -21,7 +22,7 @@ export default function WeekTab() {
   } | null>(null);
 
   return (
-    <div className="overflow-auto h-[90vh]">
+    <div className="overflow-auto h-[90vh] m-2">
       {/* Header row */}
       <div
         className="grid sticky top-0 z-10 bg-white"
@@ -74,6 +75,7 @@ export default function WeekTab() {
             })}
           </>
         ))}
+        <WeekhourPointer />
       </div>
     </div>
   );

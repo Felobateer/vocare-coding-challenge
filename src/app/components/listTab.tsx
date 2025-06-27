@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import WeekhourPointer from "./weekhourPointer";
 
 export default function ListTab() {
   let date = new Date();
