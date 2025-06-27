@@ -12,7 +12,7 @@ export default function WeekhourPointer() {
   const minutesSinceMidnight = now.getHours() * 60 + now.getMinutes();
   // Percentage of the day passed (1440 minutes in a day)
   const percentOfDay = (minutesSinceMidnight / 1440) * 100;
-  const verticalPosition = (24 * 60 * percentOfDay) / 100;
+  const verticalPosition = (24 * 80 * percentOfDay) / 100;
 
   const berlinTime = now.toLocaleTimeString("de-DE", {
     hour: "2-digit",

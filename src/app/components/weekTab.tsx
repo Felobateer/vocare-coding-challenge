@@ -22,7 +22,7 @@ export default function WeekTab() {
   } | null>(null);
 
   return (
-    <div className="overflow-auto h-[90vh] m-2">
+    <div className="relative overflow-auto h-[90vh] m-2">
       {/* Header row */}
       <div
         className="grid sticky top-0 z-10 bg-white"
@@ -50,7 +50,7 @@ export default function WeekTab() {
             <div
               key={`hour-${hourIndex}`}
               className="border border-gray-200 text-sm text-right pr-2 pt-1 sticky left-0 bg-white z-10"
-              style={{ height: "60px" }}
+              style={{ height: "80px" }}
             >
               {hour}
             </div>
@@ -66,7 +66,7 @@ export default function WeekTab() {
                     "border border-gray-200 cursor-pointer",
                     isSelected ? "bg-blue-500" : "hover:bg-blue-100",
                   )}
-                  style={{ height: "60px" }}
+                  style={{ height: "80px" }}
                   onClick={() =>
                     setSelected({ day: dayIndex, hour: hourIndex })
                   }
