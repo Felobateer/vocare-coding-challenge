@@ -3,8 +3,13 @@
 import { useState } from "react";
 import clsx from "clsx";
 import WeekhourPointer from "./weekhourPointer";
+import { AppointmentResponse } from "@/app/api/appointments/interface";
 
-export default function WeekTab() {
+interface WeekTabProps {
+  meetings: AppointmentResponse[];
+}
+
+export default function WeekTab({ meetings }: WeekTabProps) {
   const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - date.getDay() + i);

@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Activities {
+  id          String     @id @default(uuid())
+  created_at  DateTime   @default(now())
+  created_by  String?    @default(uuid())
+  appointment String?    @default(uuid())
+  type        String?
+  content     String?
+
+  appointment_rel Appointments? @relation(fields: [appointment], references: [id], name: "ActivitiesToAppointments")
+}
+
+model AppointmentAssignee {
+  id          String     @id @default(uuid())
+  created_at  DateTime   @default(now())
+  appointment String?    @default(uuid())
+  user        String?    @default(uuid())
+  user_type   String?    @default("relatives")
+
+  appointment_rel Appointments? @relation(fields: [appointment], references: [id], name: "AssigneeToAppointments")
+}
+
+model Appointments {
+  id          String        @id @default(uuid())
+  created_at  DateTime      @default(now())
+  updated_at  DateTime?
+  start       DateTime?
+  end         DateTime?
+  location    String?
+  patient     String?       @default(uuid())
+  attachements Json?        // changed from "ARRAY"
+  category    String?       @default(uuid())
+  notes       String?
+  title       String?
+
+  category_rel Categories?  @relation(fields: [category], references: [id])
+  patient_rel  Patients?    @relation(fields: [patient], references: [id])
+  activities   Activities[] @relation("ActivitiesToAppointments")
+  assignees    AppointmentAssignee[] @relation("AssigneeToAppointments")
+}
+
+model Categories {
+  id          String     @id @default(uuid())
+  created_at  DateTime   @default(now())
+  updated_at  DateTime?
+  label       String?
+  description String?
+  color       String?    @default("#00ff00")
+  icon        String?
+
+  appointments Appointments[]
+}
+
+model Patients {
+  id           String     @id @default(uuid())
+  created_at   DateTime   @default(now())
+  firstname    String?
+  lastname     String?
+  birth_date   DateTime?
+  care_level   Float?
+  pronoun      String?
+  email        String?
+  active       Boolean?
+  active_since DateTime?
+
+  appointments Appointments[]
+}
+
+model Relatives {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  pronoun    String?
+  firstname  String?
+  lastname   String?
+  notes      String?
+}

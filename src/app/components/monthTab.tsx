@@ -2,8 +2,13 @@
 
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { useMemo, useState } from "react";
+import { AppointmentResponse } from "../api/appointments/interface";
 
-export default function MonthTab() {
+interface MonthTabProps {
+  meetings: AppointmentResponse[];
+}
+
+export default function MonthTab({ meetings }: MonthTabProps) {
   const today = new Date();
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth(); // 0-indexed

@@ -6,18 +6,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import WeekhourPointer from "./weekhourPointer";
+import { AppointmentResponse } from "@/app/api/appointments/interface";
 
-export default function ListTab() {
-  let date = new Date();
-  let today =
+interface ListTabProps {
+  meetings: AppointmentResponse[];
+}
+
+export default function ListTab({ meetings }: ListTabProps) {
+  const date = new Date();
+  const today =
     date.getDate() +
     "." +
     (date.getMonth() + 1 < 10 ? "0" : "") +
     (date.getMonth() + 1) +
     "." +
     date.getFullYear();
-  let resDate = today;
+  const resDate = today;
+
   return (
     <>
       <p className="text-center text-gray-600 font-medium mt-10 h-16">
@@ -30,20 +35,40 @@ export default function ListTab() {
           <label className="text-green-800 bg-green-300 rounded-xl px-2 py-1">
             Heute
           </label>
-        ) : (
-          ""
-        )}
+        ) : null}
       </div>
-      <Card className="w-3/4 h-full mx-auto">
-        <CardHeader>
-          <CardTitle>Termin 1</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-gray-500">Details zum Termin 1...</p>
-          <p className="text-gray-500">Details zum Termin 1...</p>
-          <p className="text-gray-500">Details zum Termin 1...</p>
-        </CardContent>
-      </Card>
+
+      {meetings.length > 0 ? (
+        meetings.map((meeting, idx) => (
+          <Card className="w-3/4 h-full mx-auto mb-4" key={meeting.id ?? idx}>
+            <CardHeader>
+              <CardTitle>{meeting.title || "Termin"}</CardTitle>
+              {meeting.description && (
+                <CardDescription>{meeting.description}</CardDescription>
+              )}
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-500">
+                {meeting.details || "Keine weiteren Details verfügbar."}
+              </p>
+              {/* Example: <WeekhourPointer time={meeting.time} /> */}
+            </CardContent>
+            <CardFooter>
+              <span className="text-sm text-gray-400">
+                {meeting.date
+                  ? new Date(meeting.date).toLocaleString("de-DE")
+                  : ""}
+              </span>
+            </CardFooter>
+          </Card>
+        ))
+      ) : (
+        <Card className="w-3/4 h-full mx-auto mb-4">
+          <CardContent>
+            <p className="text-gray-500">Keine Termine vorhanden.</p>
+          </CardContent>
+        </Card>
+      )}
 
       <p className="text-center text-gray-600 font-medium mt-10 h-16">
         Keine weiteren Termine gefunden

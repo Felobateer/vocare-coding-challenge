@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import DatePicker from "./datePicker";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ModalForm from "./modalForm";
 
 interface NavbarProps {
   tab: string;
@@ -36,8 +37,10 @@ export default function Navbar({ tab, setTab }: NavbarProps) {
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <Button variant="outline">Termine filtern</Button>
-      <Button onClick={requestAppointments}>Neuer Termin</Button>
+      <div className="flex flex-row gap-4">
+        <Button variant="outline">Termine filtern</Button>
+        <ModalForm />
+      </div>
     </nav>
   );
 }

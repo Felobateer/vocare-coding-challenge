@@ -1,76 +1,50 @@
-import { db } from "./db_config";
-import { appointments } from "./db_handler";
-import { eq } from "drizzle-orm";
-import { AppointmentRequest, AppointmentResponse } from "./interface";
 import { randomUUID } from "crypto";
+import { AppointmentRequest, AppointmentResponse } from "./interface";
+import { PrismaClient } from "@/generated/prisma";
 
-const normalizeAppointment = (a: AppointmentRequest) => ({
+const prisma = new PrismaClient();
+
+const normalizeAppointment = (a: AppointmentRequest | AppointmentResponse) => ({
   ...a,
-  id: randomUUID(),
-  created_at: new Date(),
-  updated_at: new Date(),
   start: new Date(a.start),
   end: new Date(a.end),
+  updated_at: new Date(),
 });
 
 // Get all appointments
 const getAppointments = async () => {
-  const data = await db
-    .select({
-      id: appointments.id,
-      start: appointments.start,
-      end: appointments.end,
-      location: appointments.location,
-      title: appointments.title,
-      notes: appointments.notes,
-    })
-    .from(appointments)
-    .orderBy(appointments.start);
-
-  return data;
+  return await prisma.appointments.findMany();
 };
 
 // Get appointment by ID
 const getAppointmentById = async (id: string) => {
-  const [appointment] = await db
-    .select()
-    .from(appointments)
-    .where(eq(appointments.id, id));
-
+  const appointment = await prisma.appointments.findUnique({ where: { id } });
   if (!appointment) throw new Error("Appointment not found");
-
   return appointment;
 };
 
 // Create new appointment
 const createAppointment = async (appointment: AppointmentRequest) => {
-  const [created] = await db
-    .insert(appointments)
-    .values(normalizeAppointment(appointment))
-    .returning();
-
-  return created;
+  return await prisma.appointments.create({
+    data: {
+      ...normalizeAppointment(appointment),
+      id: randomUUID(),
+      created_at: new Date(),
+    },
+  });
 };
 
 // Update appointment
 const updateAppointment = async (appointment: AppointmentResponse) => {
-  const [updated] = await db
-    .update(appointments)
-    .set(normalizeAppointment(appointment))
-    .where(eq(appointments.id, appointment.id))
-    .returning();
-
-  return updated;
+  return await prisma.appointments.update({
+    where: { id: appointment.id },
+    data: normalizeAppointment(appointment),
+  });
 };
 
 // Delete appointment
 const deleteAppointment = async (id: string) => {
-  const [deleted] = await db
-    .delete(appointments)
-    .where(eq(appointments.id, id))
-    .returning();
-
-  return deleted;
+  return await prisma.appointments.delete({ where: { id } });
 };
 
 export {
