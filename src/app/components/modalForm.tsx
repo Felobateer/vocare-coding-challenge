@@ -17,7 +17,7 @@ export default function ModalForm() {
       const formData = new FormData(e.currentTarget);
 
       const data = Object.fromEntries(formData.entries());
-
+      console.log("Form data: ", data);
       const res = await fetch("/api/appointments", {
         method: "POST",
         headers: {
@@ -29,6 +29,7 @@ export default function ModalForm() {
       if (!res.ok) throw new Error("Failed to add");
 
       toast("Termin erfolgreich hinzugefügt");
+      console.log("successful");
     } catch (err) {
       console.error("Error adding appointment:", err);
       toast("Termin konnte nicht hinzugefügt werden");
@@ -54,7 +55,7 @@ export default function ModalForm() {
             <Label htmlFor="notes" className="mb-2">
               Notizen
             </Label>
-            <Input name="note" id="notes" type="text" className="mt-1" />
+            <Input name="notes" id="notes" type="text" className="mt-1" />
           </div>
           <div>
             <Label htmlFor="location" className="mb-2">

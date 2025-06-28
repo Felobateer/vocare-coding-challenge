@@ -43,20 +43,23 @@ export default function ListTab({ meetings }: ListTabProps) {
           <Card className="w-3/4 h-full mx-auto mb-4" key={meeting.id ?? idx}>
             <CardHeader>
               <CardTitle>{meeting.title || "Termin"}</CardTitle>
-              {meeting.description && (
-                <CardDescription>{meeting.description}</CardDescription>
+              {meeting.notes && (
+                <CardDescription>{meeting.notes}</CardDescription>
               )}
             </CardHeader>
             <CardContent>
               <p className="text-gray-500">
-                {meeting.details || "Keine weiteren Details verfügbar."}
+                Start:{" "}
+                {new Date(meeting.start).toLocaleString("de-DE") ||
+                  "Keine weiteren Details verfügbar."}
               </p>
               {/* Example: <WeekhourPointer time={meeting.time} /> */}
             </CardContent>
             <CardFooter>
               <span className="text-sm text-gray-400">
-                {meeting.date
-                  ? new Date(meeting.date).toLocaleString("de-DE")
+                Ende:{" "}
+                {new Date(meeting.end).toLocaleString("de-DE")
+                  ? new Date(meeting.end).toLocaleString("de-DE")
                   : ""}
               </span>
             </CardFooter>

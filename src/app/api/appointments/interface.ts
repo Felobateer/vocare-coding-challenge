@@ -16,7 +16,6 @@ export interface AppointmentRequest {
   start: string;
   end: string;
   location: string;
-  patient: string;
   attachments?: string[];
   category?: string;
   notes?: string;

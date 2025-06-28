@@ -1,5 +1,12 @@
 "use client";
-
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useState } from "react";
 import clsx from "clsx";
 import WeekhourPointer from "./weekhourPointer";
@@ -64,18 +71,70 @@ export default function WeekTab({ meetings }: WeekTabProps) {
             {Array.from({ length: 7 }).map((_, dayIndex) => {
               const isSelected =
                 selected?.day === dayIndex && selected?.hour === hourIndex;
+
+              const currentSlot = new Date();
+              currentSlot.setDate(
+                currentSlot.getDate() - currentSlot.getDay() + dayIndex,
+              );
+              currentSlot.setHours(hourIndex, 0, 0, 0);
+
+              const startOfWeek = new Date();
+              startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+              startOfWeek.setHours(0, 0, 0, 0);
+
+              const endOfWeek = new Date(startOfWeek);
+              endOfWeek.setDate(endOfWeek.getDate() + 7);
+
+              const meetingInSlot = meetings.find((meeting) => {
+                const start = new Date(meeting.start);
+                return (
+                  start >= startOfWeek &&
+                  start < endOfWeek &&
+                  start.getDay() === currentSlot.getDay() &&
+                  start.getHours() === currentSlot.getHours()
+                );
+              });
+
               return (
                 <div
                   key={`${dayIndex}-${hourIndex}`}
                   className={clsx(
-                    "border border-gray-200 cursor-pointer",
+                    "border border-gray-200 relative",
                     isSelected ? "bg-blue-500" : "hover:bg-blue-100",
                   )}
                   style={{ height: "80px" }}
                   onClick={() =>
                     setSelected({ day: dayIndex, hour: hourIndex })
                   }
-                ></div>
+                >
+                  {meetingInSlot && (
+                    <div
+                      className="absolute top-0 left-0 right-0"
+                      style={{
+                        height: `${
+                          ((new Date(meetingInSlot.end).getTime() -
+                            new Date(meetingInSlot.start).getTime()) /
+                            3600000) *
+                          80
+                        }px`,
+                        zIndex: 20,
+                      }}
+                    >
+                      <Card className="w-full h-full">
+                        <CardHeader>
+                          <CardTitle>
+                            {meetingInSlot.title || "Termin"}
+                          </CardTitle>
+                          {meetingInSlot.notes && (
+                            <CardDescription>
+                              {meetingInSlot.notes}
+                            </CardDescription>
+                          )}
+                        </CardHeader>
+                      </Card>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </>
