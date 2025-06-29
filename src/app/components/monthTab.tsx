@@ -90,7 +90,7 @@ export default function MonthTab({ meetings }: MonthTabProps) {
                 {meetingsForDay.map((meeting, idx) => (
                   <Button
                     variant={"outline"}
-                    className="h-fit border-0 shadow-white"
+                    className="h-fit border-0 shadow-white flex flex-row items-center mx-auto"
                     onClick={() => setDetails(meeting)}
                   >
                     <Card

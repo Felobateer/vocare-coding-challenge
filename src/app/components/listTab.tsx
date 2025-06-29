@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AppointmentResponse } from "@/app/api/appointments/interface";
+import { JSX } from "react";
 
 interface ListTabProps {
   meetings: AppointmentResponse[];
@@ -28,42 +29,67 @@ export default function ListTab({ meetings }: ListTabProps) {
       <p className="text-center text-gray-600 font-medium mt-10 h-16">
         Termine vor dem {today} laden
       </p>
-
-      <div className="flex flex-row justify-between w-3/4 mx-auto px-4 mb-4">
-        <p className="text-start text-black font-bold text-xl">{resDate}</p>
-        {today === resDate ? (
-          <label className="text-green-800 bg-green-300 rounded-xl px-2 py-1">
-            Heute
-          </label>
-        ) : null}
-      </div>
-
       {meetings.length > 0 ? (
-        meetings.map((meeting, idx) => (
-          <Card className="w-3/4 h-full mx-auto mb-4" key={meeting.id ?? idx}>
-            <CardHeader>
-              <CardTitle>{meeting.title || "Termin"}</CardTitle>
-              {meeting.notes && (
-                <CardDescription>{meeting.notes}</CardDescription>
-              )}
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-500">
-                Start:{" "}
-                {new Date(meeting.start).toLocaleString("de-DE") ||
-                  "Keine weiteren Details verfügbar."}
+        // Group meetings by date
+        Object.entries(
+          meetings.reduce<Record<string, AppointmentResponse[]>>(
+            (acc, meeting) => {
+              const d = new Date(meeting.start);
+              const meetingDate = `${d
+                .getDate()
+                .toString()
+                .padStart(2, "0")}.${(d.getMonth() + 1)
+                .toString()
+                .padStart(2, "0")}.${d.getFullYear()}`;
+
+              if (!acc[meetingDate]) acc[meetingDate] = [];
+              acc[meetingDate].push(meeting);
+              return acc;
+            },
+            {},
+          ),
+        ).map(([meetingDate, dayMeetings], idx) => (
+          <div key={meetingDate}>
+            <div className="flex flex-row justify-between w-3/4 mx-auto px-4 mb-2 mt-8">
+              <p className="text-start text-black font-bold text-xl">
+                {meetingDate}
               </p>
-              {/* Example: <WeekhourPointer time={meeting.time} /> */}
-            </CardContent>
-            <CardFooter>
-              <span className="text-sm text-gray-400">
-                Ende:{" "}
-                {new Date(meeting.end).toLocaleString("de-DE")
-                  ? new Date(meeting.end).toLocaleString("de-DE")
-                  : ""}
-              </span>
-            </CardFooter>
-          </Card>
+              {meetingDate === resDate ? (
+                <label className="text-green-800 bg-green-300 rounded-xl px-2 py-1">
+                  Heute
+                </label>
+              ) : null}
+            </div>
+            {dayMeetings.map((meeting, mIdx) => (
+              <Card
+                className="w-3/4 h-full mx-auto mb-4"
+                key={meeting.id ?? mIdx}
+              >
+                <CardHeader>
+                  <CardTitle>{meeting.title || "Termin"}</CardTitle>
+                  {meeting.notes && (
+                    <CardDescription>{meeting.notes}</CardDescription>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-500">
+                    Start:{" "}
+                    {new Date(meeting.start).toLocaleString("de-DE") ||
+                      "Keine weiteren Details verfügbar."}
+                  </p>
+                  {/* Example: <WeekhourPointer time={meeting.time} /> */}
+                </CardContent>
+                <CardFooter>
+                  <span className="text-sm text-gray-400">
+                    Ende:{" "}
+                    {new Date(meeting.end).toLocaleString("de-DE")
+                      ? new Date(meeting.end).toLocaleString("de-DE")
+                      : ""}
+                  </span>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
         ))
       ) : (
         <Card className="w-3/4 h-full mx-auto mb-4">
