@@ -15,13 +15,13 @@ export default function ScreenTabs() {
 
   return (
     <>
+      <Navbar tab={tab} setTab={setTab} />
       {isLoading ? (
         <LoadingScreen />
       ) : error ? (
         <p className="text-red-500 text-center">Fehler beim Laden.</p>
       ) : Array.isArray(data) ? (
         <>
-          <Navbar tab={tab} setTab={setTab} />
           <Tabs value={tab} onValueChange={setTab}>
             <TabsContent value="list">
               <ListTab meetings={data} />
