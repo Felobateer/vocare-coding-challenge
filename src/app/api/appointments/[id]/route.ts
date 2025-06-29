@@ -3,7 +3,7 @@ import { getAppointmentById, deleteAppointment } from "../controller";
 import { error } from "console";
 
 // GET an appointment by id (from query string)
-export async function GETById(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
 
   if (!id) {
@@ -22,7 +22,7 @@ export async function GETById(req: NextRequest) {
 }
 
 // DELETE an appointment by id (from query string)
-export async function DELETEById(req: NextRequest) {
+export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
 
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
